@@ -1,0 +1,15 @@
+{
+    "name": "gerha/hgp-open-immo-importer",
+    "description": "Imports the OpenImmo-XML and attachmets from a given FTP Server into a custom post tye item.",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Gerhard Popp",
+            "email": "gerhard@poppgerhard.at"
+        }
+    ],
+    "require": {
+        "a7/autoload": "^2.1",
+        "phpseclib/phpseclib": "^3.0"
+    }
+}
