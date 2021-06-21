@@ -37,10 +37,12 @@ class FTPConnection {
 
 	public function listDirs( $basedir = '/' ) {
 
+		$basedir = str_replace('\\', '/', $basedir);
+
 		$dir = ftp_mlsd($this->connection, $basedir );
 
 		$directories = array_filter($dir, function ($element){
-			if($element['type'] == 'dir'){
+			if($element['type'] == 'dir' && strpos($element['name'], '.') === false ){
 				return $element['name'];
 			}
 		});

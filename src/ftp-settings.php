@@ -73,7 +73,6 @@ function hgpoi_add_settings_to_ftp_section() {
 	);
 
 
-
 	add_settings_field(
 		'hgpoi_ftp_ssh_key',
 		'FTP Schlüssel',
@@ -82,7 +81,7 @@ function hgpoi_add_settings_to_ftp_section() {
 		'hgpoi_openimmo_ftp_settings_section',
 		[
 			__( 'Geben Sie den öffetnlichen SSH Schlüssel der SFTP Verbindung ein.' ),
-            __('Wird nur für SFTP Verbindungen gebraucht.')
+			__( 'Wird nur für SFTP Verbindungen gebraucht.' ),
 		]
 	);
 
@@ -117,7 +116,6 @@ function hgpoi_add_settings_to_ftp_section() {
 
 
 function hgpoi_ftp_connection_type_callback( $args ) {
-
 
 
 	$html = '<select id="hgpoi_ftp_connection_type" name="hgpoi_ftp_settings[hgpoi_ftp_connection_type]" x-model="connetcionValues.type"/>';
@@ -157,13 +155,12 @@ function hgpoi_ftp_pass_callback( $args ) {
 function hgpoi_ftp_ssh_key_callback( $args ) {
 
 
-
 	$html = '<textarea id="hgpoi_ftp_ssh_keyy" type="text" name="hgpoi_ftp_settings[hgpoi_ftp_ssh_key]" x-model="connetcionValues.key" x-show="connetcionValues.type == \'sftp\'"></textarea>';
 	$html .= '<label for="hgpoi_ftp_ssh_key" x-text="connetcionValues.type == \'ftp\' ? \'' . $args[1] . '\' : \'' . $args[0] . '\'"></label>';
 	echo $html;
 }
 
-function hgpoi_ftp_test_callback(){
+function hgpoi_ftp_test_callback() {
 	ob_start();
 	?>
 
@@ -180,9 +177,25 @@ function hgpoi_ftp_test_callback(){
 
 function hgpoi_ftp_directory_callback( $args ) {
 
-	$html = '<input id="hgpoi_ftp_directory" type="text" name="hgpoi_ftp_settings[hgpoi_ftp_directory]" 
-    x-model.debounce.500="path" :disabled="!connected || connection_error">';
-	$html .= '<label for="hgpoi_ftp_directory" x-text="!connected || connection_error ? \'Bitte testen Sie zuerst erfolgreich die FTP Verbindung \' : \'' . $args[0] . '\'"></label>';
+	ob_start();
+	?>
+    <label for="hgpoi_ftp_directory" x-text="!connection_error ? 'Bitte testen Sie zuerst erfolgreich die FTP Verbindung ' : '<?php echo $args[0] ?>'" x-show="!connected"></label>
+    <div x-show="connected">
+        <h5>Bitte einen Pfad wählen:</h5>
+        <ul>
+            <template x-for="dir in dirs">
+                <li x-text="dir.name" @click="selectDir(dir.name)" style="cursor: pointer"></li>
+            </template>
+        </ul>
 
-	echo $html;
+    </div>
+    <h5>Gewählter Pfad:</h5>
+    <p>
+        <strong x-text="path"></strong>
+        <small @click="clearPath()" style="cursor: pointer" x-show="path != ''">löschen</small>
+    </p>
+    <input id="hgpoi_ftp_directory" type="hidden" x-model="path" name="hgpoi_ftp_settings[hgpoi_ftp_directory]">
+
+	<?php
+	echo ob_get_clean();
 }

@@ -32,7 +32,7 @@ add_action( 'wp_ajax_listFtpDir', function () {
 	$data = get_option('hgpoi_ftp_settings');
 	$classname = 'HGPOIClasses\\' . strtoupper($data['hgpoi_ftp_connection_type']) . 'Connection';
 	$ftp = new $classname();
-	wp_die(var_dump($ftp->vagrant (sanitize_text_field($_POST['path']))));
+	wp_die(  json_encode($ftp->listDirs(sanitize_text_field($_POST['path']))));
 
 
 

@@ -46,10 +46,11 @@ function hgpoi_ftp_settings_page_display() {
                     pass: '<?php echo $value['hgpoi_ftp_pass'] ?>',
                     key: key,
                 },
-                path: '<?php echo isset( $value['hgpoi_ftp_directory'] ) ?  $value['hgpoi_ftp_directory'] : ""  ?>',
+                path: '<?php echo ! empty( $value['hgpoi_ftp_directory'] ) ? $value['hgpoi_ftp_directory'] : ""  ?>',
                 connectable: false,
                 connected: false,
                 connection_error: false,
+                dirs: [],
                 init() {
 
                     this.checkConnection();
@@ -60,11 +61,23 @@ function hgpoi_ftp_settings_page_display() {
                     this.$watch('path', () => this.getDir());
 
                 },
-                getDir(){
-                  axios.post(ajaxurl, Qs.stringify({
-                     action: 'listFtpDir',
-                     path: this.path
-                  })).then((rsp) => console.log(rsp.data));
+                getDir() {
+                    axios.post(ajaxurl, Qs.stringify({
+                        action: 'listFtpDir',
+                        path: this.path
+                    })).then((rsp) => {
+                        this.dirs = Object.values(rsp.data);
+                    });
+                },
+                selectDir(dir) {
+                    if (this.path != '') {
+                        this.path += '/';
+                    }
+                    this.path += dir;
+                    this.getDir();
+                },
+                clearPath(){
+                    this.path = '';
                 },
                 checkConnection() {
 
@@ -73,6 +86,7 @@ function hgpoi_ftp_settings_page_display() {
                     if (this.connetcionValues.type == 'ftp') {
                         if (this.connetcionValues.host != '' && this.connetcionValues.user != '' && this.connetcionValues.pass != '') {
                             this.connectable = true;
+                            this.getDir();
                         } else {
                             this.connectable = false;
                         }
@@ -83,7 +97,8 @@ function hgpoi_ftp_settings_page_display() {
                             this.connectable = false;
                         }
                     }
-                },
+                }
+                ,
                 testFtp() {
 
                     axios.post(ajaxurl, Qs.stringify({
@@ -99,9 +114,9 @@ function hgpoi_ftp_settings_page_display() {
                             this.connection_error = true;
                         })
 
-                .then(() => this.connectable = false);
+                        .then(() => this.connectable = false);
+                }
             }
-         }
         }
     </script>
     <!-- Create a header in the default WordPress 'wrap' container -->
